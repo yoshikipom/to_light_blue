@@ -1,36 +1,36 @@
-# https://onlinejudge.u-aizu.ac.jp/problems/1611
-# TLE
+# https://onlinejudge.u-aizu.ac.jp/problems/DPL_2_A
 
 
-def solve(N, A):
-    ans = -1
-    dp = [[0] * (N+1) for _ in range(N+1)]
+INF = float('inf')
 
-    for w in range(2, N+1):
-        for l in range(N):
-            r = l + w
-            if r > N:
-                continue
-            # print('l {}, r {} w {}'.format(l, r, w))
-            if dp[l+1][r-1] == w - 2 and abs(A[l] - A[r-1]) <= 1:
-                dp[l][r] = w
 
-            for mid in range(l, r+1):
-                # print('l {}, r {} mid {}'.format(l, r, mid))
-                next_tmp = max(dp[l][r], dp[l][mid] + dp[mid][r])
-                ans = max(ans, next_tmp)
-                dp[l][r] = next_tmp
+def rec(bit, v):
+    if dp[bit][v] != -1:
+        return dp[bit][v]
 
-    print(ans)
+    if (1 << V) - 1 == bit and v == 0:
+        dp[bit][0] = 0
+        return 0
+
+    res = INF
+    if v in D:
+        for to, dist in D[v].items():
+            if not (bit & (1 << to)):
+                res = min(res, rec(bit | (1 << to), to) + dist)
+
+    dp[bit][v] = res
+    return res
 
 
 if __name__ == "__main__":
-    while True:
-        N = int(input())
+    D = {}
+    V, E = list(map(int, input().split()))
+    for _ in range(E):
+        s, t, d = list(map(int, input().split()))
+        if s not in D:
+            D[s] = {}
+        D[s][t] = d
 
-        if N == 0:
-            break
+    dp = [[-1] * (V) for _ in range(1 << V)]
 
-        A = list(map(int, input().split()))
-
-        solve(N, A)
+    print(dp[0][0] if rec(0, 0) != INF else -1)
